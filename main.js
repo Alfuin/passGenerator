@@ -1,31 +1,68 @@
 const inputEl = document.querySelector("#password")
+const upperCaseCheckEl = document.querySelector("#uppercase-check")
+const numberCheckEl = document.querySelector("#number-check")
+const symbolCheckEl = document.querySelector("#symbol-check")
+const securityIndicatorBarEl = document.querySelector(
+  "#security-indicator-bar"
+)
 
-      let passwordLength = 16
+let passwordLength = 16
 
-      function generatePassword() {
-        const chars =
-          "abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ123456789?!@&*()[]"
+function generatePassword() {
+  let chars = "abcdefghjkmnpqrstuvwxyz"
 
-        let password = ""
+  const upperCaseChars = "ABCDEFGHJKLMNPQRSTUVWXYZ"
+  const numberChars = "123456789"
+  const symbolChars = "?!@&*()[]"
 
-        for (let i = 0; i < passwordLength; i++) {
-          const randomNumber = Math.floor(Math.random() * chars.length)
-          password += chars.substring(randomNumber, randomNumber + 1)
-        }
+  if (upperCaseCheckEl.checked) {
+    chars += upperCaseChars
+  }
 
-        inputEl.value = password
-      }
+  if (numberCheckEl.checked) {
+    chars += numberChars
+  }
 
-      function copy() {
-        navigator.clipboard.writeText(inputEl.value)
-      }
+  if (symbolCheckEl.checked) {
+    chars += symbolChars
+  }
 
-      const passwordLengthEl = document.querySelector("#password-length")
-      passwordLengthEl.addEventListener("input", function () {
-        passwordLength = passwordLengthEl.value
-        generatePassword()
-      })
+  let password = ""
 
-      document.querySelector("#copy-1").addEventListener("click", copy)
-      document.querySelector("#copy-2").addEventListener("click", copy)
-      generatePassword()
+  for (let i = 0; i < passwordLength; i++) {
+    const randomNumber = Math.floor(Math.random() * chars.length)
+    password += chars.substring(randomNumber, randomNumber + 1)
+  }
+
+  inputEl.value = password
+
+  calculateQuality()
+}
+
+function calculateQuality() {
+  const percent = Math.round((passwordLength / 64) * 100)
+
+  console.log(percent)
+
+  securityIndicatorBarEl.style.width = `${percent}%`
+}
+
+function copy() {
+  navigator.clipboard.writeText(inputEl.value)
+}
+
+const passwordLengthEl = document.querySelector("#password-length")
+passwordLengthEl.addEventListener("input", function () {
+  passwordLength = passwordLengthEl.value
+  document.querySelector("#password-length-text").innerText =
+    passwordLength
+  generatePassword()
+})
+upperCaseCheckEl.addEventListener("click", generatePassword)
+numberCheckEl.addEventListener("click", generatePassword)
+symbolCheckEl.addEventListener("click", generatePassword)
+
+document.querySelector("#copy-1").addEventListener("click", copy)
+document.querySelector("#copy-2").addEventListener("click", copy)
+
+generatePassword()
